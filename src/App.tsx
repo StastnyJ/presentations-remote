@@ -4,21 +4,19 @@ import ControllsPage from "./Pages/Controlls";
 import QuestionsPage, { Question } from "./Pages/Questions";
 import "./App.css";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
-import { Client, Message } from "paho-mqtt";
 import ErrorPage from "./Pages/ErrorPage";
+import mqtt from "mqtt";
 
 type appState = "connected" | "connecting" | "connectionLost" | "failed";
 
 function App() {
-  const [mqttClient, setMqttClient] = useState<Client | undefined>(undefined);
+  const [mqttClient, setMqttClient] = useState<mqtt.MqttClient | undefined>(undefined);
   const [state, setState] = useState<appState>("connecting");
   const [questionsVisible, setQuestionsVisible] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
 
-  const sendMessage = (chanel: string, message: string) => {
-    const msg = new Message(message);
-    msg.destinationName = chanel;
-    if (mqttClient !== undefined) mqttClient.send(msg);
+  const sendMessage = (channel: string, msg: string) => {
+    if (mqttClient !== undefined) mqttClient.publish(channel, msg);
   };
 
   const messageArrived = (msg: string) => {
@@ -35,19 +33,19 @@ function App() {
   };
 
   useEffect(() => {
-    const client = new Client("159.89.4.84", 9001, "remote" + Math.round(Math.random() * 1000).toString());
-    client.onMessageArrived = (m) => messageArrived(m.payloadString);
-    client.onConnectionLost = () => setState("connectionLost");
-    client.connect({
-      onSuccess: () => {
-        client.subscribe("remote");
-        setState("connected");
-      },
-      onFailure: () => {
-        alert("Failed to connect");
-        setState("failed");
-      },
+    const client = mqtt.connect("wss://stastnyj.duckdns.org:9001/mqtt");
+
+    client.on("connect", () => {
+      client.subscribe("remote");
+      setState("connected");
     });
+
+    client.on("message", function (topic, message) {
+      messageArrived(message.toString());
+    });
+
+    client.on("disconnect", () => setState("connectionLost"));
+
     setMqttClient(client);
   }, []);
 
