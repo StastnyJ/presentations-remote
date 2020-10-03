@@ -10,18 +10,18 @@ export default function ({ sendMessage, setQuestionsVisible }: IProps) {
   return (
     <div className="page">
       <Timer />
-      <span className="arrow" onClick={() => sendMessage("presentation", "moveUp")} role="img" aria-label="move-up">
+      <span className="arrow" onClick={() => sendMessage("presentation", "move/up")} role="img" aria-label="move-up">
         ⬆️
       </span>
       <div>
-        <span className="arrow" onClick={() => sendMessage("presentation", "moveLeft")} role="img" aria-label="move-left">
+        <span className="arrow" onClick={() => sendMessage("presentation", "move/left")} role="img" aria-label="move-left">
           ⬅️
         </span>
-        <span className="arrow" onClick={() => sendMessage("presentation", "moveRight")} role="img" aria-label="move-right">
+        <span className="arrow" onClick={() => sendMessage("presentation", "move/right")} role="img" aria-label="move-right">
           ➡️
         </span>
       </div>
-      <span className="arrow" onClick={() => sendMessage("presentation", "moveDown")} role="img" aria-label="move-down">
+      <span className="arrow" onClick={() => sendMessage("presentation", "move/down")} role="img" aria-label="move-down">
         ⬇️
       </span>
       <br />
